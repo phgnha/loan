@@ -1,28 +1,26 @@
 package com.loan_management.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
-@Table(name = "credit_staff")
+@Table(name = "CreditStaff")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreditStaff {
     @Id
+    @Column(name = "staffID", length = 10)
     private String staffID;
     
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
-    private String position;
-    private String email;
     
-    @OneToMany(mappedBy = "staff")
-    private List<Loan> loans;
+    @Column(name = "position", length = 50)
+    private String position;
+    
+    @Column(name = "email", length = 100)
+    private String email;
 }

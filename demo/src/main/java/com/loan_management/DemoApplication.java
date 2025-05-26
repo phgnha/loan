@@ -1,4 +1,4 @@
-package com.loan_management.demo;
+package com.loan_management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

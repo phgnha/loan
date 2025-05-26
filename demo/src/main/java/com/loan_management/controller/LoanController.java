@@ -36,10 +36,7 @@ public class LoanController {
         }
         
         // Check if customer is eligible for the loan
-        if (!loanService.isCustomerEligibleForLoan(customerId, loan.getAmount())) {
-            return new ResponseEntity<>("Customer is not eligible for this loan amount", 
-                                      HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+
         
         // Create the loan
         Loan createdLoan = loanService.createLoan(loan);
@@ -61,61 +58,6 @@ public class LoanController {
         return new ResponseEntity<>(loans, HttpStatus.OK);
     }
     
-    // Get loans by customer ID
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<Loan>> getLoansByCustomerId(@PathVariable("customerId") String customerId) {
-        List<Loan> loans = loanService.findLoansByCustomerId(customerId);
-        return new ResponseEntity<>(loans, HttpStatus.OK);
-    }
-    
-    // Get loans by staff ID
-    @GetMapping("/staff/{staffId}")
-    public ResponseEntity<List<Loan>> getLoansByStaffId(@PathVariable("staffId") String staffId) {
-        List<Loan> loans = loanService.findLoansByStaffId(staffId);
-        return new ResponseEntity<>(loans, HttpStatus.OK);
-    }
-    
-    // Get loans created between dates
-    @GetMapping("/date-range")
-    public ResponseEntity<List<Loan>> getLoansByDateRange(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<Loan> loans = loanService.findLoansByDateRange(startDate, endDate);
-        return new ResponseEntity<>(loans, HttpStatus.OK);
-    }
-    
-    // Get loans by amount range
-    @GetMapping("/amount-range")
-    public ResponseEntity<List<Loan>> getLoansByAmountRange(
-            @RequestParam("min") float minAmount,
-            @RequestParam("max") float maxAmount) {
-        List<Loan> loans = loanService.findLoansByAmountRange(minAmount, maxAmount);
-        return new ResponseEntity<>(loans, HttpStatus.OK);
-    }
-    
-    // Get total loan amount for a customer
-    @GetMapping("/total-amount/{customerId}")
-    public ResponseEntity<?> getTotalLoanAmount(@PathVariable("customerId") String customerId) {
-        if (!customerService.existsById(customerId)) {
-            return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
-        }
-        
-        Float totalAmount = loanService.calculateTotalLoanAmount(customerId);
-        return new ResponseEntity<>(totalAmount, HttpStatus.OK);
-    }
-    
-    // Update a loan
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateLoan(@PathVariable("id") String id, @RequestBody Loan loan) {
-        if (!loanService.findById(id).isPresent()) {
-            return new ResponseEntity<>("Loan not found", HttpStatus.NOT_FOUND);
-        }
-        
-        loan.setLoanID(id); // Ensure the ID matches
-        Loan updatedLoan = loanService.updateLoan(loan);
-        return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
-    }
-    
     // Delete a loan
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLoan(@PathVariable("id") String id) {
@@ -127,3 +69,13 @@ public class LoanController {
         return new ResponseEntity<>("Loan deleted successfully", HttpStatus.OK);
     }
 }
+
+
+
+// curl -X POST http://localhost:8080/api/loans ^
+//   -H "Content-Type: application/json" ^
+//   -d "{\"loanID\": \"L006\", \"amount\": 1000000, \"term\": 16, \"interest_rate\": 5.5, \"staffID\": \"S003\", \"created_date\": \"2025-05-01\", \"customer\": {\"customerID\": \"C001\"}}"
+
+//   curl -X DELETE http://localhost:8080/api/loans/{id}
+
+//   curl -X GET http://localhost:8080/api/loans
