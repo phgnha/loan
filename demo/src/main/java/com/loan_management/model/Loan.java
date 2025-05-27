@@ -37,4 +37,8 @@ public class Loan {
     @ManyToOne
     @JoinColumn(name = "staffID")
     private CreditStaff staff;
+
+    @ManyToOne
+    @JoinColumn(name = "portfolioID")
+    private LoanPortfolio loanPortfolio;
 }

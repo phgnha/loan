@@ -122,6 +122,7 @@
                     <th>Tên Khách hàng</th>
                     <th>Số tiền vay</th>
                     <th>Thời hạn (tháng)</th>
+                    <th>Loại vay</th>
                     <th>Lãi suất (%)</th>
                     <th>Ngày tạo</th>
                     <th>Nhân viên</th>
@@ -192,7 +193,8 @@
                     <td>${loan.customer?.name || 'N/A'}</td>
                     <td>${formatCurrency(loan.amount || 0)}</td>
                     <td>${loan.term || 'N/A'}</td>
-                    <td>${loan.interestRate || 0}%</td>
+                    <td>${loan.loanPortfolio?.loanType || 'N/A'}</td>
+                    <td>${loan.loanPortfolio?.interestRate || 0}%</td>
                     <td>${formatDate(loan.createdDate)}</td>
                     <td>${loan.staff?.name || 'N/A'}</td>
                     <td>
