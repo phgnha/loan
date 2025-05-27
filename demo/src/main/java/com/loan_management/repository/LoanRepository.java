@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface LoanRepository extends JpaRepository<Loan, String> {
+public interface LoanRepository extends JpaRepository<Loan, Long> {
     
     // Find loans by customer
     List<Loan> findByCustomer(Customer customer);

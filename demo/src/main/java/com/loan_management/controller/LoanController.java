@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
+@CrossOrigin(origins = "*") // Thêm dòng này
 public class LoanController {
 
     @Autowired
@@ -60,7 +61,7 @@ public class LoanController {
     
     // Delete a loan
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLoan(@PathVariable("id") String id) {
+    public ResponseEntity<?> deleteLoan(@PathVariable("id") Long id) {
         if (!loanService.findById(id).isPresent()) {
             return new ResponseEntity<>("Loan not found", HttpStatus.NOT_FOUND);
         }
@@ -74,7 +75,7 @@ public class LoanController {
 
 // curl -X POST http://localhost:8080/api/loans ^
 //   -H "Content-Type: application/json" ^
-//   -d "{\"loanID\": \"L006\", \"amount\": 1000000, \"term\": 16, \"interest_rate\": 5.5, \"staffID\": \"S003\", \"created_date\": \"2025-05-01\", \"customer\": {\"customerID\": \"C001\"}}"
+//   -d "{ \"amount\": 1000000, \"term\": 16, \"interest_rate\": 5.5, \"staffID\": \"S003\", \"created_date\": \"2025-05-01\", \"customer\": {\"customerID\": \"C001\"}}"
 
 //   curl -X DELETE http://localhost:8080/api/loans/{id}
 

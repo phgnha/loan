@@ -25,9 +25,9 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Loan createLoan(Loan loan) {
         // Generate a loan ID if not provided
-        if (loan.getLoanID() == null || loan.getLoanID().isEmpty()) {
-            loan.setLoanID("L" + System.currentTimeMillis());
-        }
+        // if (loan.getLoanID() == null || loan.getLoanID().isEmpty()) {
+        //     loan.setLoanID("L" + System.currentTimeMillis());
+        // }
         
         // Set created date if not provided
         // if (loan.getCreatedDate() == null) {
@@ -38,7 +38,7 @@ public class LoanServiceImpl implements LoanService {
     }
     
     @Override
-    public Optional<Loan> findById(String loanId) {
+    public Optional<Loan> findById(Long loanId) {
         return loanRepository.findById(loanId);
     }
     
@@ -48,7 +48,7 @@ public class LoanServiceImpl implements LoanService {
     }
     
     @Override
-    public void deleteLoan(String loanId) {
+    public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);
     }
 }

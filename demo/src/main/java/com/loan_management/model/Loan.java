@@ -14,8 +14,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Loan {
     @Id
-    @Column(name = "loanID", length = 10)
-    private String loanID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "loanID")
+    private Long loanID;
     
     @Column(name = "amount", nullable = false)
     private float amount;

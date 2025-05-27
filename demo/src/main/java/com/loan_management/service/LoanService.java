@@ -13,12 +13,12 @@ public interface LoanService {
     Loan createLoan(Loan loan);
     
     // Find loan by ID
-    Optional<Loan> findById(String loanId);
+    Optional<Loan> findById(Long loanId);
     
     // Get all loans
     List<Loan> findAllLoans();
     
     
     // Delete a loan
-    void deleteLoan(String loanId);
+    void deleteLoan(Long loanId);
 }

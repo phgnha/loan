@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Loans</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-back {
+            background: #6c757d;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quản lý Khoản vay</h1>
+        
+        <div class="header-actions">
+            <button class="btn btn-back" onclick="goBack()">← Quay lại</button>
+            <button class="btn" onclick="navigateToAddLoan()">+ Add Loan</button>
+        </div>
+        
+        <div id="loading" class="loading">Đang tải dữ liệu...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <table id="loanTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>ID Khoản vay</th>
+                    <th>ID Khách hàng</th>
+                    <th>Tên Khách hàng</th>
+                    <th>Số tiền vay</th>
+                    <th>Thời hạn (tháng)</th>
+                    <th>Lãi suất (%)</th>
+                    <th>Ngày tạo</th>
+                    <th>Nhân viên</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="loanTableBody">
+            </tbody>
+        </table>
+        
+        <div id="noData" class="no-data" style="display: none;">
+            Không có khoản vay nào được tìm thấy.
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        // Load loans when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLoans();
+        });
+        
+        async function loadLoans() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/loans`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const loans = await response.json();
+                console.log('Loaded loans:', loans); // Debug log
+                displayLoans(loans);
+                
+            } catch (error) {
+                console.error('Error loading loans:', error);
+                showError('Không thể tải danh sách khoản vay. Vui lòng kiểm tra kết nối server.');
+            }
+        }
+        
+        function displayLoans(loans) {
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const table = document.getElementById('loanTable');
+            const noData = document.getElementById('noData');
+            const tbody = document.getElementById('loanTableBody');
+            
+            // Hide loading
+            loading.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            if (!loans || loans.length === 0) {
+                noData.style.display = 'block';
+                table.style.display = 'none';
+                return;
+            }
+            
+            // Clear table body
+            tbody.innerHTML = '';
+            
+            // Add rows
+            loans.forEach(loan => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${loan.loanID || 'N/A'}</td>
+                    <td>${loan.customer?.customerID || 'N/A'}</td>
+                    <td>${loan.customer?.name || 'N/A'}</td>
+                    <td>${formatCurrency(loan.amount || 0)}</td>
+                    <td>${loan.term || 'N/A'}</td>
+                    <td>${loan.interestRate || 0}%</td>
+                    <td>${formatDate(loan.createdDate)}</td>
+                    <td>${loan.staff?.name || 'N/A'}</td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 0.9em;" onclick="deleteLoan('${loan.loanID}')">
+                            Xóa
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            table.style.display = 'table';
+            noData.style.display = 'none';
+        }
+        
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const table = document.getElementById('loanTable');
+            const noData = document.getElementById('noData');
+            
+            loading.style.display = 'none';
+            table.style.display = 'none';
+            noData.style.display = 'none';
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+        
+        async function deleteLoan(loanId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa khoản vay này?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/loans/${loanId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Xóa khoản vay thành công!');
+                    loadLoans(); // Reload the table
+                } else {
+                    throw new Error('Failed to delete loan');
+                }
+            } catch (error) {
+                console.error('Error deleting loan:', error);
+                alert('Có lỗi xảy ra khi xóa khoản vay.');
+            }
+        }
+        
+        function navigateToAddLoan() {
+            window.location.href = 'AddLoanView.html';
+        }
+        
+        function goBack() {
+            window.location.href = 'CreditStaffHomeView.html';
+        }
+    </script>
+</body>
+</html>
