@@ -33,7 +33,12 @@ public class LoanController {
         
         String customerId = loan.getCustomer().getCustomerID();
         if (!customerService.existsById(customerId)) {
-            return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Không tìm thấy khách hàng", HttpStatus.NOT_FOUND);
+        }
+
+        if (loanService.hasPendingLoan(customerId)) {
+            return new ResponseEntity<>("Khách Hàng có khoản vay đang xử lý, không thể tạo thêm khoản vay mới", 
+                                      HttpStatus.CONFLICT);
         }
         
         // Check if customer is eligible for the loan

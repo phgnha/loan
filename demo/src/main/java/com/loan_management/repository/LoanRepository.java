@@ -41,4 +41,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     
     // Count loans by customer ID
     long countByCustomer_CustomerID(String customerID);
+
+    boolean existsByCustomer_CustomerIDAndStatus(String customerID, String status);
+
 }

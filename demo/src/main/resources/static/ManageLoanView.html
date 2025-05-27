@@ -108,7 +108,10 @@
         
         <div class="header-actions">
             <button class="btn btn-back" onclick="goBack()">← Quay lại</button>
-            <button class="btn" onclick="navigateToAddLoan()">+ Add Loan</button>
+            <button class="btn">- Xóa khoản vay</button>
+            <button class="btn" onclick="navigateToAddLoan()">+ Thêm khoản vay</button>
+            
+
         </div>
         
         <div id="loading" class="loading">Đang tải dữ liệu...</div>
@@ -122,11 +125,11 @@
                     <th>Tên Khách hàng</th>
                     <th>Số tiền vay</th>
                     <th>Thời hạn (tháng)</th>
-                    <th>Loại vay</th>
+                    <th>Gói vay</th>
                     <th>Lãi suất (%)</th>
-                    <th>Ngày tạo</th>
+                    <th>Ngày bắt đầu</th>
                     <th>Nhân viên</th>
-                    <th>Thao tác</th>
+                    <th>Trạng thái</th>
                 </tr>
             </thead>
             <tbody id="loanTableBody">
@@ -191,17 +194,14 @@
                     <td>${loan.loanID || 'N/A'}</td>
                     <td>${loan.customer?.customerID || 'N/A'}</td>
                     <td>${loan.customer?.name || 'N/A'}</td>
-                    <td>${formatCurrency(loan.amount || 0)}</td>
+                    <td>${loan.amount || 0}</td>
                     <td>${loan.term || 'N/A'}</td>
                     <td>${loan.loanPortfolio?.loanType || 'N/A'}</td>
                     <td>${loan.loanPortfolio?.interestRate || 0}%</td>
-                    <td>${formatDate(loan.createdDate)}</td>
+                    <td>${loan.createdDate}</td>
                     <td>${loan.staff?.name || 'N/A'}</td>
-                    <td>
-                        <button class="btn" style="padding: 5px 10px; font-size: 0.9em;" onclick="deleteLoan('${loan.loanID}')">
-                            Xóa
-                        </button>
-                    </td>
+                    <td>${loan.status || 'N/A'}</td>
+
                 `;
                 tbody.appendChild(row);
             });
@@ -223,42 +223,9 @@
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
         }
+
         
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(amount);
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN');
-        }
-        
-        async function deleteLoan(loanId) {
-            if (!confirm('Bạn có chắc chắn muốn xóa khoản vay này?')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/loans/${loanId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    alert('Xóa khoản vay thành công!');
-                    loadLoans(); // Reload the table
-                } else {
-                    throw new Error('Failed to delete loan');
-                }
-            } catch (error) {
-                console.error('Error deleting loan:', error);
-                alert('Có lỗi xảy ra khi xóa khoản vay.');
-            }
-        }
-        
+
         function navigateToAddLoan() {
             window.location.href = 'AddLoanView.html';
         }

@@ -30,6 +30,9 @@ public class Loan {
     @Column(name = "createdDate")
     private LocalDate createdDate;
 
+    @Column(name = "status", length = 50)
+    private String status = "Đang xử lý";
+
     @ManyToOne
     @JoinColumn(name = "customerID")
     private Customer customer;

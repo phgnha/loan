@@ -51,4 +51,8 @@ public class LoanServiceImpl implements LoanService {
     public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);
     }
+    @Override
+    public boolean hasPendingLoan(String customerId) {
+        return loanRepository.existsByCustomer_CustomerIDAndStatus(customerId, "Đang xử lý");
+    }
 }

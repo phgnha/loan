@@ -21,4 +21,7 @@ public interface LoanService {
     
     // Delete a loan
     void deleteLoan(Long loanId);
+    
+    boolean hasPendingLoan(String customerId);
+
 }
